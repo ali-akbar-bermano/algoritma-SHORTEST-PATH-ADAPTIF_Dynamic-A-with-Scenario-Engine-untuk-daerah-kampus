@@ -1,0 +1,26 @@
+{
+  "edge_conditions": {
+    "E12": {
+      "status": "POTHOLE",
+      "type": "POTHOLE",
+      "severity": 1.6
+    },
+    "E43": {
+      "status": "BUSY",
+      "type": "BUSY",
+      "severity": 2.0
+    },
+    "E11": {
+      "status": "BUSY",
+      "type": "BUSY",
+      "severity": 2.0
+    },
+    "E18": {
+      "status": "BUSY",
+      "type": "BUSY",
+      "severity": 2.0
+    }
+  },
+  "edge_directions": {},
+  "last_modified": "2026-05-08T17:30:52"
+}
