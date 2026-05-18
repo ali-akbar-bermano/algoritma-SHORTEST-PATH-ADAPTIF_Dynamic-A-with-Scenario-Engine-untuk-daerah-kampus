@@ -74,18 +74,21 @@ def calc_cost(
     }
 
     edge_id = edge["id"]
+    condition_id = edge.get("condition_id", edge_id)
     distance = float(edge.get("distance", 100))
     surface = edge.get("surface", "ASPHALT")
 
-    if edge_id in SCENARIO_BLOCKED.get(scenario, set()):
+    blocked_edges = SCENARIO_BLOCKED.get(scenario, set())
+    if edge_id in blocked_edges or condition_id in blocked_edges:
         return float("inf")
 
     k_surface = surface_multiplier.get(surface, 1.0)
-    k_scenario = SCENARIO_MODIFIERS.get(scenario, {}).get(edge_id, 1.0)
+    scenario_modifiers = SCENARIO_MODIFIERS.get(scenario, {})
+    k_scenario = scenario_modifiers.get(edge_id, scenario_modifiers.get(condition_id, 1.0))
     k_condition = 1.0
 
     edge_conditions = conditions.get("edge_conditions", {})
-    condition = edge_conditions.get(edge_id, {})
+    condition = edge_conditions.get(edge_id, edge_conditions.get(condition_id, {}))
     status = (condition.get("status") or condition.get("type") or "NORMAL").upper()
 
     if status == "CLOSED":
@@ -259,7 +262,11 @@ def _build_adjacency(
 
 
 def _direction_for(edge: dict, conditions: dict) -> str:
-    override = conditions.get("edge_directions", {}).get(edge["id"])
+    condition_id = edge.get("condition_id", edge["id"])
+    override = conditions.get("edge_directions", {}).get(
+        edge["id"],
+        conditions.get("edge_directions", {}).get(condition_id),
+    )
     if override:
         return override
     return "TWO_WAY" if edge.get("bidirectional", True) else "ONE_WAY_FORWARD"
